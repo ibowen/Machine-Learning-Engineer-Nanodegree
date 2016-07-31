@@ -23,16 +23,28 @@ class LearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
-        
-        # TODO: Select action according to your policy
-        action = random.choice(Environment.valid_actions)
-
+        # Update action based on US traffic rules at intersection
+        action_okay = True
+        if self.next_waypoint == 'right':
+            if inputs['light'] == 'red' and inputs['left'] == 'forward':
+                action_okay = False
+        elif self.next_waypoint == 'forward':
+            if inputs['light'] == 'red':
+                action_okay = False
+        elif self.next_waypoint == 'left':
+            if inputs['light'] == 'red' or (inputs['oncoming'] == 'forward' or inputs['oncoming'] == 'right'):
+                action_okay = False
+		# initialize one action
+        action = None
+        if action_okay:
+            action = self.next_waypoint
+            
         # Execute action and get reward
         reward = self.env.act(self, action)
 
         # TODO: Learn policy based on state, action, reward
 
-        #print("LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward))  # [debug]
+        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
 
 def run():
