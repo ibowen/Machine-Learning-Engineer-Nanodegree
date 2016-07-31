@@ -3,6 +3,7 @@ from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
 
+# Based on the Q-learning implementation of Travis DeWolf in https://github.com/studywolf
 class QLearn:
 	def __init__(self, actions, epsilon=0.1, alpha=0.2, gamma=0.9):
 		self.q = {}
@@ -53,7 +54,8 @@ class LearningAgent(Agent):
     def reset(self, destination=None):
         self.planner.route_to(destination)
         # TODO: Prepare for a new trip; reset any variables here, if required
-
+		self.qlearn = QLearn(Environment.valid_actions, epsilon=.05, alpha=0.1, gamma=0.9)
+		
     def update(self, t):
         # Gather inputs
         self.next_waypoint = self.planner.next_waypoint()  # from route planner, also displayed by simulator
@@ -83,7 +85,7 @@ class LearningAgent(Agent):
         # Update the current state
         self.qlearn.updateQ(curr_state, action, reward, next_state)
 
-        #print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
 
 def run():
