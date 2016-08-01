@@ -2,9 +2,10 @@ import random
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
+import os
+import numpy as np
 
 # Based on the Q-learning implementation of Travis DeWolf in https://github.com/studywolf
-
 class QAgent(Agent):
     """An agent that learns to drive in the smartcab world."""
 
@@ -18,10 +19,11 @@ class QAgent(Agent):
 		# exploration threshold
         self.epsilon = epsilon
 		# learning rate
-        self.alpha = epsilon
+        self.alpha = alpha
 		# discount rate
-        self.gamma = epsilon
+        self.gamma = gamma
         self.actions = Environment.valid_actions
+        # total reward
         self.total_reward = 0.0
 
     def reset(self, destination=None):
@@ -74,7 +76,7 @@ class QAgent(Agent):
         # Update the current state
         self.updateQ(curr_state, action, reward, next_state)
 
-        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        #print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
     def chooseAction(self, state):
 		# introduce exploration to avoid local minimum
@@ -97,20 +99,36 @@ class QAgent(Agent):
 
 def run():
     """Run the agent for a finite number of trials."""
+    # create output file
+    target_dir = os.path.dirname(os.path.realpath(__file__))
+    target_path = os.path.join(target_dir, 'qlearning_tuning_report.txt')
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+	# loop the parameters
+    for epsilon in [0.1, 0.5, 0.9]:
+        for alpha in np.arange(0.1, 1, 0.2):
+            for gamma in np.arange(0.1, 1, 0.2):
+                print epsilon, alpha, gamma
+                # Set up environment and agent
+                e = Environment()  # create environment (also adds some dummy traffic)
+                a = e.create_agent(QAgent, epsilon, alpha, gamma)  # create agent
+                e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
+				# NOTE: You can set enforce_deadline=False while debugging to allow longer trials
 
-    # Set up environment and agent
-    e = Environment()  # create environment (also adds some dummy traffic)
-    a = e.create_agent(QAgent)  # create agent
-    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
-    # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
-
-    # Now simulate it
-    sim = Simulator(e, update_delay=0.005, display=True)  # create simulator (uses pygame when display=True, if available)
-    # NOTE: To speed up simulation, reduce update_delay and/or set display=False
-
-    sim.run(n_trials=100)  # run for a specified number of trials
-    # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C on the command-line
-
+				# Now simulate it
+                sim = Simulator(e, update_delay=0.001, display=False)  # create simulator (uses pygame when display=True, if available)
+				# NOTE: To speed up simulation, reduce update_delay and/or set display=False
+                sim.run(n_trials=100)  # run for a specified number of trials
+                # get the count for the number of successful trials and average running time
+                summary = sim.report()
+                
+                # write out the results
+                try:
+					with open(target_path, 'a') as f:
+						f.write('epsilon {}, alpha {}, gamma {} : success {}, avg_time {}, total_reward {}\n'.format(epsilon, alpha, gamma, summary[0], summary[1], round(a.total_reward, 3)))
+						f.close()
+                except:
+					raise
 
 if __name__ == '__main__':
     run()

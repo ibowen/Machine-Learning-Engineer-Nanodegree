@@ -58,10 +58,15 @@ class Simulator(object):
             except Exception as e:
                 self.display = False
                 print "Simulator.__init__(): Error initializing GUI objects; display disabled.\n{}: {}".format(e.__class__.__name__, e)
-
+		# counter for success
+        self.count = 0
+        # average running time
+        self.avg_time = 0.0
+		
     def run(self, n_trials=1):
         self.quit = False
-        for trial in xrange(n_trials):
+        total_time = 0.0
+        for trial in xrange(n_trials):    
             print "Simulator.run(): Trial {}".format(trial)  # [debug]
             self.env.reset()
             self.current_time = 0.0
@@ -72,7 +77,8 @@ class Simulator(object):
                     # Update current time
                     self.current_time = time.time() - self.start_time
                     #print "Simulator.run(): current_time = {:.3f}".format(self.current_time)
-
+                    # total running time
+                    total_time += self.current_time
                     # Handle GUI events
                     if self.display:
                         for event in self.pygame.event.get():
@@ -96,14 +102,20 @@ class Simulator(object):
                     if self.display:
                         self.render()
                         self.pygame.time.wait(self.frame_delay)
+                                          	
                 except KeyboardInterrupt:
                     self.quit = True
                 finally:
                     if self.quit or self.env.done:
                         break
-
+        	# count the successful trial        
+            if self.env.success:
+                self.count += 1
+                
             if self.quit:
                 break
+        # calculate the average time        
+        self.avg_time = total_time / n_trials
 
     def render(self):
         # Clear screen
@@ -169,3 +181,7 @@ class Simulator(object):
             self.pygame.time.wait(self.frame_delay)
         self.screen.blit(self.font.render(pause_text, True, self.bg_color, self.bg_color), (100, self.height - 40))
         self.start_time += (time.time() - abs_pause_time)
+	
+	# return the number of successful trial and average running time
+    def report(self):
+        return (self.count, self.avg_time)

@@ -36,6 +36,8 @@ class Environment(object):
         self.t = 0
         self.agent_states = OrderedDict()
         self.status_text = ""
+        # if one trial is successful
+        self.success = False
 
         # Road network
         self.grid_size = (8, 6)  # (cols, rows)
@@ -75,6 +77,9 @@ class Environment(object):
     def reset(self):
         self.done = False
         self.t = 0
+        
+        # reset success tag
+        self.success = False
 
         # Reset traffic lights
         for traffic_light in self.intersections.itervalues():
@@ -204,6 +209,9 @@ class Environment(object):
                 if state['deadline'] >= 0:
                     reward += 10  # bonus
                 self.done = True
+                # set the successful trial
+                self.success = True
+
                 print "Environment.act(): Primary agent has reached destination!"  # [debug]
             self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
             #print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)  # [debug]
