@@ -43,7 +43,8 @@ class LearningAgent(Agent):
         reward = self.env.act(self, action)
 
         # TODO: Learn policy based on state, action, reward
-
+		self.state = tuple((inputs['light'], inputs['oncoming'], inputs['left'], inputs['right']))
+		
         #print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
 

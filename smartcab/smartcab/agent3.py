@@ -13,12 +13,14 @@ class QAgent(Agent):
         self.color = 'red'  # override color
         self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
         # TODO: Initialize any additional variables here
+        # state
+        self.state = None
         # Q_Learning state dictionary
         self.q = {}
 		# exploration threshold
         self.epsilon = epsilon
 		# learning rate
-        self.alpha = epsilon
+        self.alpha = alpha
 		# discount rate
         self.gamma = epsilon
         self.actions = Environment.valid_actions
@@ -28,6 +30,7 @@ class QAgent(Agent):
         self.planner.route_to(destination)
         # TODO: Prepare for a new trip; reset any variables here, if required
         self.total_reward = 0.0
+        self.state = None
         
 	# query Q_Learning dictionary to get the state value
     def getQ(self, state, action):
@@ -72,6 +75,7 @@ class QAgent(Agent):
         next_state = tuple(next_state)
         
         # Update the current state
+        self.state = tuple((inputs['light'], inputs['oncoming'], inputs['left'], inputs['right']))
         self.updateQ(curr_state, action, reward, next_state)
 
         print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
