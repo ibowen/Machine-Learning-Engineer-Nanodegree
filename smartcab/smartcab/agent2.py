@@ -11,10 +11,12 @@ class LearningAgent(Agent):
         self.color = 'red'  # override color
         self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
         # TODO: Initialize any additional variables here
+        self.total_reward = 0.0
 
     def reset(self, destination=None):
         self.planner.route_to(destination)
         # TODO: Prepare for a new trip; reset any variables here, if required
+        self.total_reward = 0.0
 
     def update(self, t):
         # Gather inputs
@@ -23,6 +25,7 @@ class LearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
+        self.state = tuple((inputs['light'], inputs['oncoming'], inputs['left'], inputs['right']))
         # Update action based on US traffic rules at intersection
         action_okay = True
         if self.next_waypoint == 'right':
@@ -41,11 +44,11 @@ class LearningAgent(Agent):
             
         # Execute action and get reward
         reward = self.env.act(self, action)
+        self.total_reward += reward
 
         # TODO: Learn policy based on state, action, reward
-		self.state = tuple((inputs['light'], inputs['oncoming'], inputs['left'], inputs['right']))
-		
-        #print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        
+        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
 
 def run():
@@ -58,12 +61,12 @@ def run():
     # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
 
     # Now simulate it
-    sim = Simulator(e, update_delay=0.005, display=True)  # create simulator (uses pygame when display=True, if available)
+    sim = Simulator(e, update_delay=0.05, display=True)  # create simulator (uses pygame when display=True, if available)
     # NOTE: To speed up simulation, reduce update_delay and/or set display=False
 
     sim.run(n_trials=100)  # run for a specified number of trials
     # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C on the command-line
-
+    print 'total_reward: {}'.format(a.total_reward)
 
 if __name__ == '__main__':
     run()

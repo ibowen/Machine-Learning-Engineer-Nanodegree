@@ -65,7 +65,8 @@ class QAgent(Agent):
         reward = self.env.act(self, action)
         self.total_reward += reward
         
-        # Next state
+        # Update state
+        self.state = tuple((inputs['light'], inputs['oncoming'], inputs['left'], inputs['right']))
         # Get the next input of the current state
         inputs2 = self.env.sense(self)
         # Get the next waypoint of the next state
@@ -74,14 +75,13 @@ class QAgent(Agent):
         next_state.append(next2_waypoint)
         next_state = tuple(next_state)
         
-        # Update the current state
-        self.state = tuple((inputs['light'], inputs['oncoming'], inputs['left'], inputs['right']))
+        # Update the Q table
         self.updateQ(curr_state, action, reward, next_state)
 
-        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        print "QAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
     def chooseAction(self, state):
-		# introduce exploration to avoid local minimum
+		# introduce exploration
 		if random.random() < self.epsilon:
 			action = random.choice(self.actions)
 		else:
@@ -114,7 +114,7 @@ def run():
 
     sim.run(n_trials=100)  # run for a specified number of trials
     # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C on the command-line
-
+    print 'total_reward: {}'.format(a.total_reward)
 
 if __name__ == '__main__':
     run()

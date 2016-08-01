@@ -27,6 +27,8 @@ class QAgent(Agent):
         self.actions = Environment.valid_actions
         # total reward
         self.total_reward = 0.0
+        # randome state
+        self.random = False
 
     def reset(self, destination=None):
         self.planner.route_to(destination)
@@ -50,6 +52,8 @@ class QAgent(Agent):
 			
 	# update state value
     def update(self, t):
+        # reset random epsilon
+        self.random = False
         # Gather inputs
         self.next_waypoint = self.planner.next_waypoint()  # from route planner, also displayed by simulator
         inputs = self.env.sense(self)
@@ -79,14 +83,15 @@ class QAgent(Agent):
         
         # Update the Q table
         self.updateQ(curr_state, action, reward, next_state)
-
-        #print "QAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+		
+        print "deadline = {}, next_waypoint = {}, action = {}, random = {}, inputs = {}, reward = {}".format(deadline, self.next_waypoint, action, self.random, inputs, reward)  # [debug]
 
     def chooseAction(self, state):
 		# introduce exploration
-		if random.random() < self.epsilon:
-			action = random.choice(self.actions)
-		else:
+        if random.random() < self.epsilon:
+            action = random.choice(self.actions)
+            self.random = True
+        else:
 			# normal implementation of Q update
 			q = [self.getQ(state, a) for a in self.actions]
 			maxQ = max(q)
@@ -99,40 +104,24 @@ class QAgent(Agent):
 				i = q.index(maxQ)
 
 			action = self.actions[i]
-		return action
+        return action
 
 def run():
     """Run the agent for a finite number of trials."""
-    # create output file
     target_dir = os.path.dirname(os.path.realpath(__file__))
     target_path = os.path.join(target_dir, 'qlearning_tuning_report.txt')
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
-	# loop the parameters
-    for epsilon in [0.1, 0.5, 0.9]:
-        for alpha in np.arange(0.1, 1, 0.2):
-            for gamma in np.arange(0.1, 1, 0.2):
-                print epsilon, alpha, gamma
-                # Set up environment and agent
-                e = Environment()  # create environment (also adds some dummy traffic)
-                a = e.create_agent(QAgent, epsilon, alpha, gamma)  # create agent
-                e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
-				# NOTE: You can set enforce_deadline=False while debugging to allow longer trials
+	# Set up environment and agent
+    e = Environment()  # create environment (also adds some dummy traffic)
+    a = e.create_agent(QAgent, 0.1, 0.3, 0.3)  # create agent
+    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
+	# NOTE: You can set enforce_deadline=False while debugging to allow longer trials
 
-				# Now simulate it
-                sim = Simulator(e, update_delay=0.001, display=False)  # create simulator (uses pygame when display=True, if available)
-				# NOTE: To speed up simulation, reduce update_delay and/or set display=False
-                sim.run(n_trials=100)  # run for a specified number of trials
-                # get the count for the number of successful trials and average running time
-                summary = sim.report()
-                
-                # write out the results
-                try:
-					with open(target_path, 'a') as f:
-						f.write('epsilon {}, alpha {}, gamma {} : success {}, avg_time {}, total_reward {}\n'.format(epsilon, alpha, gamma, summary[0], summary[1], round(a.total_reward, 3)))
-						f.close()
-                except:
-					raise
+	# Now simulate it
+    sim = Simulator(e, update_delay=0.001, display=False)  # create simulator (uses pygame when display=True, if available)
+	# NOTE: To speed up simulation, reduce update_delay and/or set display=False
+    sim.run(n_trials=100)  # run for a specified number of trials
 
 if __name__ == '__main__':
     run()
