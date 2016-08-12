@@ -8,5 +8,7 @@ The project was built on the Jupyter Notebook. SKlearn is the library used to bu
   - Exploratory Data Analysis: "redhat_customer_potential_EDA.ipynb"
   - Benchmark: "redhat_customer_potential_Dummy.ipynb", "redhat_customer_potential_DecisionTree.ipynb"
   - Tree Model Tuning: redhat_customer_potential_RandomForest.ipynb
+- Raw data and intermediate data:
+  - folder "/data"
 - Plotting used in the report:
-  - fold "/plotting"
+  - folder "/plotting"
