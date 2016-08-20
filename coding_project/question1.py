@@ -31,6 +31,9 @@ def question1(s, t):
 	Parameters: s, t: string, substring
 	Returns: True or False: boolean
 	"""
+	if s is None or t is None:
+		return False
+
 	if len(s) < len(t): # longer substring is definitely not an anagram
 		return False
 	flag = False # set a flag to return
@@ -46,6 +49,14 @@ def main():
 	print question1('udacity', 'ad')
 	# should return false
 	print question1('udacity', 'jm')
+	# should false
+	print question1('udacity', '')
+	# should false
+	print question1('', 'd')
+	# should false
+	print question1('', None)
+	# should false
+	print question1(None, None)
 
 if __name__ == "__main__":
     main()

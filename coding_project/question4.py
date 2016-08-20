@@ -14,14 +14,22 @@ Space Complexity: no extra space needed, it's O(1)
 
 def question4(T, r, n1, n2):
 	"""
-	Definition: 
+	Definition: function to return the node row number of the least common ancester
 	Parameters: 
-	Returns: 
+		T: 2D list
+		r: int, a root node row number
+		n1,n2: int, row numbers
+	Returns: int, node row number
 	"""
 	if T is None:
 		return -1
 	if r == n1 or r == n2:
 		return r
+
+	length = len(T) # the number of tree nodes
+	# out of range check
+	if r >= length or n1 >= length or n2 >= length:
+		return -1
 
 	left_idx = find_idx(T[r], 0, r) # find the left node index
 	right_idx = find_idx(T[r], r, len(T[r])) # find the right node index
@@ -57,9 +65,14 @@ def main():
 	       [0, 0, 0, 0, 0],
 	       [1, 0, 0, 0, 1],
 	       [0, 0, 0, 0, 0]]
-
 	# should be 3
 	print question4(test, 3, 1, 4)
+
+	# should be -1
+	print question4(None, 3, 1, 4)
+
+	# should be -1
+	print question4(test, 6, 1, 4)
 
 
 if __name__ == "__main__":

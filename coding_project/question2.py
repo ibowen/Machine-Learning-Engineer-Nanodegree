@@ -65,7 +65,13 @@ def main():
 	# should return abba
 	print question2('abbac')
 	# should return a
+	print question2('ab')
+	# should return a
 	print question2('a')
+	# should return ''
+	print question2('')
+	# should return ''
+	print question2(None)
 
 if __name__ == "__main__":
     main()

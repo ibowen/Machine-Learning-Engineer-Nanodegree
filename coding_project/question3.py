@@ -59,12 +59,28 @@ def question3(G):
 	return mst
 
 def main():
+	# test case
+	# should print {'A': [('B', 2)]}
+	G = {'A': [('B', 2)],
+		 'B': [('A', 2)]}
+	print question3(G)
+
+	# should print {'A': [('B', 2)], 'B': [('C', 5)]}
+	G = {'A': [('B', 2)],
+		 'B': [('A', 2), ('C', 5)], 
+		 'C': [('B', 5)]}
+	print question3(G)
+	
+	# should print {'A': [('E', 1)], 'C': [('B', 5)], 'B': [('D', 4)], 'E': [('C', 3)]}
 	G = {'A': [('B', 2), ('E', 1)],
 		 'B': [('A', 2), ('C', 5), ('D', 4)], 
 		 'C': [('B', 5), ('D', 6), ('E', 3)],
 		 'D': [('B', 4), ('C', 6)],
 		 'E': [('A', 1), ('C', 3)]}
+	print question3(G)	 
 
+	G = None
+	# should print None
 	print question3(G)
 
 if __name__ == "__main__":
