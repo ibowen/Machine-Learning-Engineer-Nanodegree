@@ -1,8 +1,17 @@
 
 """
-Design Choice:
-Complexity: Python sort() using timsort algorithm which is a hybrid of merg sort and insertion sort. The timsort has the complexity of O(nlogn)
-	Then the is_anagram has the complexity of O(nlogn)
+Question 1: Given two strings s and t, determine whether some anagram of t is a substring of s.
+
+Design Choice: We have loop s to check if each substring has the same character. There is no choice but looping the string. 
+We chould choose intersection or equation of two strings to check anagram. The first will take O(n^2), and the latter will take O(nlogn). 
+So I choose the second one.
+
+Time Complexity: O(n-k)*(klogk), suppose t has the length of k, and s has the length of n. 
+Breaking string into list will take O(k). Python sort() using timsort algorithm which is a hybrid of merg sort and insertion sort. The timsort has the complexity of O(nlogn).
+So, the is_anagram has the complexity of O(k + klogk). In question1 function, we move s along the index of t to check the anagram.
+It will take (n-k). Therefore, the complexity is O(n-k)*(k + klogk)
+
+Space Complexity: O(1), we don't need extra space
 """
 def is_anagram(str1, str2):
 	"""
@@ -33,8 +42,10 @@ def question1(s, t):
 
 def main():
 	# test cases
-	print "'udacity' and 'ad'(should be True) : {}".format(question1('udacity', 'ad'))
-	print "'udacity' and 'jm'(should be False) : {}".format(question1('udacity', 'jm'))
+	# should return true
+	print question1('udacity', 'ad')
+	# should return false
+	print question1('udacity', 'jm')
 
 if __name__ == "__main__":
     main()

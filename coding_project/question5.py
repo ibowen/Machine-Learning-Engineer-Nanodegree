@@ -3,7 +3,9 @@
 Question5: Find the element in a singly linked list that's m elements from the end. 
 
 
-Design Choice: In a single list, we have to tranverse the whole list to get the mth element from the end. 
+Design Choice: Simply tranverse the list and record the m elements along the way.
+
+Implementation: In a single list, we have to tranverse the whole list to get the mth element from the end. 
 So a m-length array is needed to record m nodes of the list in each iteration. 
 In the end, the first element of the array will be the mth element from the end of the list
 

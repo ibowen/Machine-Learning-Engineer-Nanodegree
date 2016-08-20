@@ -3,27 +3,17 @@
 Question 2: Given a string a, find the longest palindromic substring contained in a. 
 Your function definition should look like question2(a), and return a string.
 
-Design Choice:
-Complexity:
+Design Choice: The natural method is brutal force, finding the longest palindromic. That would give a complexity of O(n^3).
+Another way is to use dynamic programming. 
+
+Implementation: Whether a longer substring is parlindromic depends on the previous shorter substring.
+For dynamic programming, we need a 2d matrix to record if each substring is parlindromic.
+
+Time Complexity: O(n^2), it loops the length of substring from 1 to n. In each loop, we move a window-like frame to check each substring,
+That's n, n-1, ... 1. So it's O(n^2) in total
+
+Space Complexity: O(n^2) 2D matrix is needed with half of them(one side of diaganal) unused.
 """	
-def is_parlindromic(substring):
-	"""
-	Definition: check if one string is parlindromic
-	Parameters: substring: a string
-	Returns: True or False: bool
-	"""
-	if substring is None or substring == '':
-		return False
-	length = len(substring)
-	start = 0
-	end = length - 1
-	while start <= end:
-		if substring[start] == substring[end]:
-			start += 1
-			end -= 1
-			continue
-		return False
-	return True
 
 def question2(s):
 	"""
@@ -33,24 +23,49 @@ def question2(s):
 	"""
 	if s is None or s == '':
 		return ''
+
 	length = len(s)
-	if length == 1:
-		return s
-	for win_size in xrange(length, 0, -1):
+	# init a dp matrix
+	parl_matrix = [[False for col in range(length)] for row in range(length)] 
+	# init the start status
+	for i in xrange(length):
+		parl_matrix[i][i] = True
+
+	# index tags to record the longest substring
+	max_start = 0
+	max_end = 0
+	max_length = 1
+
+	# state update
+	for inv in xrange(1, length + 1): # increase the length interval from 1 to string length
 		start = 0
-		while start + win_size <= length:
-			end = start + win_size
-			if is_parlindromic(s[start:end]):
-				return s[start:end]
+		end = start + inv - 1
+		while (end < length):
+			if (start + 1) <= (end - 1): # base case
+				parl_matrix[start][end] = parl_matrix[start + 1][end - 1] and s[start] == s[end]
+			else: # case for two adjacent characters
+				parl_matrix[start][end] = s[start] == s[end]
+
+			if parl_matrix[start][end] == True: # if true, compare with the max length and update the maximum start and end index
+				if max_length < inv:
+					max_length = inv
+					max_start = start
+					max_end = end
 			start += 1
+			end = start + inv - 1
+
+	return s[max_start:max_end+1]
+
 
 
 def main():
 	# test cases
-	print "'radar' has the longest parlindromic string: {}".format(question2('radar'))
-	print "'redivider' has the longest parlindromic string: {}".format(question2('redivider'))
-	print "'ab' has the longest parlindromic string: {}".format(question2('aa'))
-	print "'a' has the longest parlindromic string: {}".format(question2('a'))
+	# should return radar
+	print question2('radar')
+	# should return abba
+	print question2('abbac')
+	# should return a
+	print question2('a')
 
 if __name__ == "__main__":
     main()
