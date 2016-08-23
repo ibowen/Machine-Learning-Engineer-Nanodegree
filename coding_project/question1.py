@@ -20,10 +20,8 @@ def is_anagram(str1, str2):
 	Returns: True or False: boolean
 	"""
 	s1 = [i for i in str1] # break the string into an array
-	s2 = [j for j in str2] 
 	s1.sort() # sort the array
-	s2.sort()
-	return ''.join(s1) == ''.join(s2) # join the array back into string and compare two strings
+	return ''.join(s1) == str2 # join the array back into string and compare two strings
 
 def question1(s, t):
 	"""
@@ -34,9 +32,16 @@ def question1(s, t):
 	if s is None or t is None:
 		return False
 
+	if len(s) < 1 or len(t) < 1: # test for 0-length string
+		return False
+
 	if len(s) < len(t): # longer substring is definitely not an anagram
 		return False
 	flag = False # set a flag to return
+	t = [i for i in t] # sort t
+	t.sort()
+	t = ''.join(t) 
+
 	for i in xrange(len(s) - len(t) + 1): # loop through each substring to compare with the target substring
 		flag = is_anagram(s[i:i + len(t)], t)
 		if flag:
@@ -45,17 +50,17 @@ def question1(s, t):
 
 def main():
 	# test cases
-	# should return true
+	# should be true
 	print question1('udacity', 'ad')
-	# should return false
+	# should be false
 	print question1('udacity', 'jm')
-	# should false
+	# should be false
 	print question1('udacity', '')
-	# should false
+	# should be false
 	print question1('', 'd')
-	# should false
+	# should be false
 	print question1('', None)
-	# should false
+	# should be false
 	print question1(None, None)
 
 if __name__ == "__main__":
