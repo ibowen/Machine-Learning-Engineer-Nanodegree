@@ -3,19 +3,15 @@
 Question5: Find the element in a singly linked list that's m elements from the end. 
 
 
-Design Choice: Simply tranverse the list and record the m elements along the way.
+Design Choice: On way is to tranverse the list and record the m elements along the way.
+Another better way is to use cursor node to record the mth node along the tranverse. 
 
-Implementation: In a single list, we have to tranverse the whole list to get the mth element from the end. 
-So a m-length array is needed to record m nodes of the list in each iteration. 
-In the end, the first element of the array will be the mth element from the end of the list
+Implementation: In the second choice, we use a position variable to record the number of steps when tranversing the list.
+Plus, a cursor node is needed to update the node from the head when the postion adds up from mth step. 
+Finally, we return the cursor node as the tranversing ends at the tail.
 
-Time Complexity: the complexity starts with n(the length of the list ll) for tranversing the while list.
-At each iteration, we are moving the nodes in the array from end to beginning. It's m movements. Hence:
-	Worst case: O(n^2), if it happens to return the nth element from the end
-	Best case: O(n), if it only return the last node of the list
-	Average case: O(n*m), given a average m
-
-Space Complexity: a m-length array is needed as a window frame to move along the list
+Time Complexity: the complexity is always n(the length of the list ll) for tranversing the whole list.
+Space Complexity: O(1), a node cursor and a position variable are needed
 """	
 
 class Node(object):
@@ -32,21 +28,21 @@ def question5(ll, m):
 	# None check
 	if ll is None or m <= 0:
 		return
-	# initiate a m-length array as the window frame
-	window = [None] * m
+	# initiate a cursor
+	cursor = ll
+	position = 1
 	# traverse the list ll till the tail
 	while ll:
-		for idx, val in enumerate(window):
-			if idx == m - 1:	# insert the new node from ll into the end position of window m
-				window[idx] = ll.data
-				break
-			window[idx] = window[idx + 1]
 		if ll.next:
 			ll = ll.next
+			position += 1
 		else:
 			break
 
-	return window[0] # the first element of m will be the mth element from the end of the list ll
+		if position > m: # cursor moves when postion > m
+				cursor = cursor.next
+
+	return cursor.data if position >= m else None # only return cursor when ll is longer than m, otherwise return None
 
 def main():
 	# test cases
